@@ -1,0 +1,122 @@
+﻿@model PagedList.IPagedList<TrainerAssignment.Models.Trainer>
+@using PagedList;
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", new { @class = "form-group" })
+</p>
+@using (@Html.BeginForm("Index", "Trainer", FormMethod.Get, new { @class = "form-group" }))
+{
+
+    @Html.TextBox("searchFirstName", null, new { @class = "form-control", placeholder = "Search First Name", type = "search" });
+    <br />
+    @Html.TextBox("searchLastName", null, new { @class = "form-control", placeholder = "Search Last Name", type = "search" });
+    <br />
+    @Html.TextBox("searchMinSalary", null, new { @class = "form-control", placeholder = "Search Minimum Salary", type = "number" });
+    <br />
+    @Html.TextBox("searchMaxSalary", null, new { @class = "form-control", placeholder = "Search Maximum Salary", type = "number" });
+    <br />   
+    @Html.TextBox("searchMaxDate", null, new { @class = "form-control", placeholder = "Search Max Date", type = "date" });
+    <br />
+    @Html.TextBox("searchMinDate", null, new { @class = "form-control", placeholder = "Search Max Date", type = "date" });
+    <br />
+    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSortOrder" />
+    <input type="submit" value="Search Trainer" class="btn btn-primary" />
+    <input id="ResetButton" type="button" value="Clear Form" class="btn btn-success" />
+}
+@if (!(Model.PageCount < Model.PageNumber))
+{
+    <table class="table">
+
+        <tr>
+            <th>
+                @Html.ActionLink("First Name", "Index", "Trainer", new { sortOrder = ViewBag.FNSP, searchFirstName = ViewBag.CurrectFirstName, searchLastName = ViewBag.CurrectLastName, searchMinSalary = ViewBag.CurrectMinSalary, searchMaxSalary = ViewBag.CurrectMaxSalary }, null)
+            </th>
+            <th>
+                @Html.ActionLink("Last Name", "Index", "Trainer", new { sortOrder = ViewBag.LNSP, searchFirstName = ViewBag.CurrectFirstName, searchLastName = ViewBag.CurrectLastName, searchMinSalary = ViewBag.CurrectMinSalary, searchMaxSalary = ViewBag.CurrectMaxSalary }, null)
+            </th>
+            <th>
+                @Html.ActionLink("Salary", "Index", "Trainer", new { sortOrder = ViewBag.SNSP, searchFirstName = ViewBag.CurrectFirstName, searchLastName = ViewBag.CurrectLastName, searchMinSalary = ViewBag.CurrectMinSalary, searchMaxSalary = ViewBag.CurrectMaxSalary }, null)
+            </th>
+            <th>
+                @Html.ActionLink("Date Hire", "Index", "Trainer", new { sortOrder = ViewBag.SNSP, searchFirstName = ViewBag.CurrectFirstName, searchLastName = ViewBag.CurrectLastName, searchMinSalary = ViewBag.CurrectMinSalary, searchMaxSalary = ViewBag.CurrectMaxSalary, searchMinDate = ViewBag.CurrentMinDate, searchMaxDate = ViewBag.CurrentMaxDate }, null)
+            </th>
+            <th>
+                Is Available
+            </th>
+            <th>
+                Subject
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+
+
+        @foreach (var trainer in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => trainer.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => trainer.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => trainer.Salary)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => trainer.DateHire)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => trainer.IsAvailable)
+                </td>
+                <td>
+                    <ul>
+                        @foreach (var subject in trainer.Categories)
+                        {
+                            <li>@subject.Subject</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = trainer.TrainerId },new { @class = "btn btn-primary" }) |
+                    @Html.ActionLink("Details", "Details", new { id = trainer.TrainerId }, new { @class = "btn btn-info" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = trainer.TrainerId }, new { @class = "btn btn-danger", @onclick = "DeleteButton()" })
+                </td>
+            </tr>
+        }
+
+    </table>
+
+}
+else
+{
+    <h1>No Data in This Page</h1>
+}
+Page @(Model.PageCount<Model.PageNumber?0:Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, x => Url.Action("Index", "Trainer", new { page = x }))
+@Html.ActionLink("Back To Index", "Index", "Trainer")
+
+@section MyCustomJavascript{
+    <script>
+        $("#ResetButton").click(function (e) {
+            $("#searchFirstName").val("");
+            $("#searchLastName").val("");
+            $("#searchMinSalary").val("");
+            $("#searchMaxSalary").val("");
+            $("#searchMaxDate").val("");
+            $("#searchMinDate").val("");
+
+        });
+        function DeleteButton() {
+            alert("Are u sure u want to delete this row?");
+        }
+    </script>
+}
